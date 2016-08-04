@@ -66,7 +66,6 @@ var getUnanswered = function(tags) {
 	.done(function(result){ //this waits for the ajax to return with a succesful promise object
 		var searchResults = showSearchResults(request.tagged, result.items.length);
 		$('.search-results').html(searchResults);
-		console.log(result);
 		//$.each is a higher order function. It takes an array and a function as an argument.
 		//The function is executed once for each item in the array.
 		$.each(result.items, function(i, item) {
@@ -85,14 +84,14 @@ var showInspiration = function(answer){
 
 	var result = $('.templates .tag').clone();
 
-	var scoreElem = result.find('user-score');
+	var scoreElem = result.find('.user-score');
 	scoreElem.text(answer.score);
 
-	var userElm = result.find('user-id a');
+	var userElm = result.find('.user-id a');
 	userElm.attr('href', answer.user.link);
-	userElm.text(answer.user.display_name);
+	userElm.html(answer.user.display_name);
 
-	var repElm = result.find('reputation');
+	var repElm = result.find('.reputation');
 	repElm.text(answer.user.reputation);
 
 	return result;
@@ -111,17 +110,19 @@ var getInspiration = function(tags) {
 		dataType: "jsonp",
 		type: "GET"
 	})
-	.done(function(result){ //this waits for the ajax to return with a succesful promise object
-		console.log(result);
+	.done(function(result){ 
 		var searchResults = showSearchResults(tags, result.items.length);
 		$('.search-results').html(searchResults);
 
 		$.each(result.items, function(i, item) {
 			var tag = showInspiration(item);
 			$('.results').append(tag);
-			console.log(tag); 
 		});
 	})
+	.fail(function(jqXHR, error){ 
+		var errorElem = showError(error);
+		$('.search-results').append(errorElem);
+	});
 };
 
 
